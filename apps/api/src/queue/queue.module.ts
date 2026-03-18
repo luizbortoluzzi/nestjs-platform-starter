@@ -1,10 +1,11 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { AppConfigService } from '../config/config.service';
 import { QUEUE_NAMES } from './queue.constants';
 import { NotificationProcessor } from './processors/notification.processor';
 
-@Global()
+// Not @Global() — queues are application-level resources, not infrastructure
+// singletons. Import QueueModule explicitly in the modules that enqueue jobs.
 @Module({
   imports: [
     BullModule.forRootAsync({

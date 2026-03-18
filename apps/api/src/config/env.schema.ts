@@ -5,8 +5,8 @@ export const envSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid('development', 'test', 'production')
     .default('development'),
-  PORT: Joi.number().default(3000),
-  CORS_ORIGINS: Joi.string().default('http://localhost:3000'),
+  PORT: Joi.number().default(6000),
+  CORS_ORIGINS: Joi.string().default('http://localhost:6000'),
 
   // Database
   DATABASE_HOST: Joi.string().required(),

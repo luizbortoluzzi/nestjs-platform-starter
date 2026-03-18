@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Body, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Patch, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
@@ -23,8 +23,8 @@ export class UsersController {
     return this.usersService.update(user.id, dto);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.findById(id);
-  }
+  // GET /users/:id is intentionally absent. Exposing user profiles by ID
+  // without an ownership check or admin role guard is an IDOR vulnerability —
+  // any authenticated user could enumerate other users' data by UUID.
+  // Add this endpoint only after adding RolesGuard + @Roles(UserRole.ADMIN).
 }

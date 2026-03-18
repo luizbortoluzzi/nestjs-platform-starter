@@ -12,10 +12,23 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+
+    // ─── Type safety ──────────────────────────────────────────────────────
+    // strictNullChecks: every value that might be null or undefined must be
+    // handled explicitly. This is the single most valuable strict flag —
+    // it catches a whole class of runtime crashes at compile time.
+    "strictNullChecks": true,
+
+    // noImplicitAny: left off intentionally. Enabling it produces errors
+    // across third-party decorator metadata and Passport callback signatures
+    // that are not worth the noise at this stage. Add explicit :any where
+    // needed if you enable this in future.
     "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+
+    // These are TypeScript defaults (true when unspecified) — listed
+    // explicitly so they cannot accidentally regress via a config merge.
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true
   }
 }

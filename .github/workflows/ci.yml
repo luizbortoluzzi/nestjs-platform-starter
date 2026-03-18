@@ -1,0 +1,106 @@
+name: CI
+
+# Runs on every push to main/develop and on every pull request targeting those
+# branches. The goal is fast, reliable signal — not an enterprise deploy pipeline.
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Cancel an in-progress run for the same branch/PR when a new commit is pushed.
+# Prevents wasted minutes on outdated runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─── Lint ──────────────────────────────────────────────────────────────────
+  # Fast first gate. Fails immediately on unused variables and other error-level
+  # rules so developers know before tests even finish.
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npx eslint "src/**/*.ts"
+
+  # ─── Test ──────────────────────────────────────────────────────────────────
+  # Unit tests with Jest. --passWithNoTests allows the job to succeed while the
+  # test suite is being built out — remove that flag once tests exist.
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --passWithNoTests
+
+  # ─── Build ─────────────────────────────────────────────────────────────────
+  # Validates that the TypeScript project compiles cleanly via `nest build`.
+  # A failing build here means the Dockerfile would also fail, but this job
+  # produces a clearer error message than a Docker build failure would.
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  # ─── Docker build ──────────────────────────────────────────────────────────
+  # Validates the full multi-stage Dockerfile end-to-end. Only runs when lint,
+  # test, and build all pass — no point burning minutes on a broken codebase.
+  # Does NOT push to any registry; this is validation only.
+  docker-build:
+    name: Docker build
+    needs: [lint, test, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build apps/api \
+            --file apps/api/Dockerfile \
+            --tag platform-api:ci

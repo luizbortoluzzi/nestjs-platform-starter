@@ -18,6 +18,11 @@ import { AppConfigService } from '../config/config.service';
           database: db.name,
           username: db.user,
           password: db.password,
+          // WARNING: rejectUnauthorized: false disables TLS certificate
+          // verification. This is acceptable for managed cloud databases that
+          // use self-signed certs, but MUST be reviewed before production.
+          // Set DATABASE_SSL=false if your provider supports full cert
+          // verification, and remove this flag after validating the cert chain.
           ssl: db.ssl ? { rejectUnauthorized: false } : false,
           synchronize: db.synchronize,
 
