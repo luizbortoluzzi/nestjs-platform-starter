@@ -1,13 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { getQueueToken } from '@nestjs/bullmq';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { getQueueToken } from '@nestjs/bullmq';
+import { Test, TestingModule } from '@nestjs/testing';
+
 import * as bcrypt from 'bcryptjs';
+import { DataSource } from 'typeorm';
+
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
 import { AppConfigService } from '../../config/config.service';
 import { QUEUE_NAMES } from '../../infra/queue/queue.constants';
 import { UserEntity, UserRole } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 // ─── bcrypt mock ─────────────────────────────────────────────────────────────
 // Speed up tests — real bcrypt hashing is intentionally slow (cost factor 12).
@@ -40,8 +43,15 @@ describe('AuthService', () => {
   let usersService: jest.Mocked<UsersService>;
   let jwtService: jest.Mocked<JwtService>;
   let emailsQueue: { add: jest.Mock };
+  let mockManager: { create: jest.Mock; save: jest.Mock; update: jest.Mock };
 
   beforeEach(async () => {
+    mockManager = {
+      create: jest.fn(),
+      save: jest.fn(),
+      update: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -75,6 +85,14 @@ describe('AuthService', () => {
           provide: getQueueToken(QUEUE_NAMES.EMAILS),
           useValue: { add: jest.fn().mockResolvedValue({ id: 'job-1' }) },
         },
+        {
+          provide: DataSource,
+          useValue: {
+            transaction: jest
+              .fn()
+              .mockImplementation((cb: (m: typeof mockManager) => unknown) => cb(mockManager)),
+          },
+        },
       ],
     }).compile();
 
@@ -94,15 +112,14 @@ describe('AuthService', () => {
     it('creates user, hashes password, issues tokens, enqueues welcome email', async () => {
       const user = makeUser();
       usersService.findByEmail.mockResolvedValue(null);
-      usersService.create.mockResolvedValue(user);
+      mockManager.create.mockReturnValue(user);
+      mockManager.save.mockResolvedValue(user);
 
       const result = await service.register(dto);
 
       expect(usersService.findByEmail).toHaveBeenCalledWith(dto.email);
       expect(bcrypt.hash).toHaveBeenCalledWith(dto.password, 12);
-      expect(usersService.create).toHaveBeenCalledWith(
-        expect.objectContaining({ email: dto.email, name: dto.name }),
-      );
+      expect(mockManager.save).toHaveBeenCalled();
       expect(emailsQueue.add).toHaveBeenCalledWith(
         'welcome-email',
         expect.objectContaining({ userId: user.id, email: user.email }),

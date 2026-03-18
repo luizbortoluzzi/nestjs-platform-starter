@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
 import { IsString, MinLength, MaxLength, IsOptional, IsEnum } from 'class-validator';
+
 import { ProjectStatus } from '../entities/project.entity';
 
 export class CreateProjectDto {

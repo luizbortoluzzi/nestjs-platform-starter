@@ -1,7 +1,9 @@
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { Logger } from 'nestjs-pino';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+import { Logger } from 'nestjs-pino';
+
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/config.service';
 

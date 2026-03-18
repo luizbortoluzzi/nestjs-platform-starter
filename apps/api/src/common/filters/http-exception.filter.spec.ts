@@ -1,5 +1,7 @@
 import { HttpException, HttpStatus, ArgumentsHost } from '@nestjs/common';
+
 import { QueryFailedError } from 'typeorm';
+
 import { HttpExceptionFilter } from './http-exception.filter';
 
 function makeHost(reqOverrides = {}): ArgumentsHost {

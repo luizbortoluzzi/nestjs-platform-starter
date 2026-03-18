@@ -1,10 +1,13 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
+
 import Redis from 'ioredis';
+
 import { REDIS_CLIENT } from './cache.constants';
 import { AppConfigService } from '../../config/config.service';
 
 @Injectable()
 export class AppCacheService {
+  private readonly logger = new Logger(AppCacheService.name);
   private readonly defaultTtl: number;
 
   constructor(
@@ -15,12 +18,17 @@ export class AppCacheService {
   }
 
   async get<T>(key: string): Promise<T | null> {
-    const value = await this.redis.get(key);
-    if (value === null) return null;
     try {
-      return JSON.parse(value) as T;
-    } catch {
-      return value as unknown as T;
+      const value = await this.redis.get(key);
+      if (value === null) return null;
+      try {
+        return JSON.parse(value) as T;
+      } catch {
+        return value as unknown as T;
+      }
+    } catch (err) {
+      this.logger.warn(`Redis get failed for key "${key}": ${String(err)}`);
+      return null;
     }
   }
 

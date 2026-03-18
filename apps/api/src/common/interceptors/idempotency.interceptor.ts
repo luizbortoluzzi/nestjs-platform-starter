@@ -6,9 +6,10 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { Observable, from, switchMap } from 'rxjs';
-import { tap } from 'rxjs/operators';
+
 import { Request, Response } from 'express';
+import { Observable, from, switchMap } from 'rxjs';
+
 import { AppCacheService } from '../../infra/cache/cache.service';
 
 /**
@@ -65,11 +66,15 @@ export class IdempotencyInterceptor implements NestInterceptor {
         }
 
         // Key was just claimed — execute the handler, then persist the result.
-        return next.handle().pipe(
-          tap(async (result: unknown) => {
-            await this.cache.set(redisKey, result, RESULT_TTL_SECONDS);
-          }),
-        );
+        return next
+          .handle()
+          .pipe(
+            switchMap((result: unknown) =>
+              from(this.cache.set(redisKey, result, RESULT_TTL_SECONDS)).pipe(
+                switchMap(() => from(Promise.resolve(result))),
+              ),
+            ),
+          );
       }),
     );
   }

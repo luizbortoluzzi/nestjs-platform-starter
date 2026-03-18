@@ -14,20 +14,28 @@
     "skipLibCheck": true,
 
     // ─── Type safety ──────────────────────────────────────────────────────
-    // strictNullChecks: every value that might be null or undefined must be
-    // handled explicitly. This is the single most valuable strict flag —
-    // it catches a whole class of runtime crashes at compile time.
-    "strictNullChecks": true,
+    // strict: true enables strictNullChecks, noImplicitAny, strictFunctionTypes,
+    // strictBindCallApply, strictPropertyInitialization, and noImplicitThis.
+    // strictPropertyInitialization is overridden below for TypeORM entities.
+    "strict": true,
 
-    // noImplicitAny: left off intentionally. Enabling it produces errors
-    // across third-party decorator metadata and Passport callback signatures
-    // that are not worth the noise at this stage. Add explicit :any where
-    // needed if you enable this in future.
-    "noImplicitAny": false,
+    // TypeORM entities declare columns as class properties without initialising
+    // them in the constructor — the ORM handles hydration at runtime.
+    // strictPropertyInitialization would flag every column as an error.
+    "strictPropertyInitialization": false,
 
-    // These are TypeScript defaults (true when unspecified) — listed
-    // explicitly so they cannot accidentally regress via a config merge.
-    "strictBindCallApply": true,
+    // Catches functions that may return implicitly — forces explicit return on
+    // every branch so callers can never receive an unexpected undefined.
+    "noImplicitReturns": true,
+
+    // Forces the `override` keyword on any method that overrides a base-class
+    // method. Prevents silent breakage when the base class changes its API.
+    "noImplicitOverride": true,
+
+    // noUncheckedIndexedAccess: array[i] and obj[key] return T | undefined
+    // rather than T. Catches a large class of off-by-one and missing-key bugs.
+    "noUncheckedIndexedAccess": true,
+
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true
   }

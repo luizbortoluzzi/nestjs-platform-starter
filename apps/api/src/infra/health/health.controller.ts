@@ -1,14 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
   MemoryHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { Public } from '../../common/decorators/public.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
+
 import { RedisHealthIndicator } from './indicators/redis.health';
+import { Public } from '../../common/decorators/public.decorator';
 
 // Maximum heap the process may use before the readiness probe fails.
 // Adjust this threshold to match the memory limits of your deployment target.

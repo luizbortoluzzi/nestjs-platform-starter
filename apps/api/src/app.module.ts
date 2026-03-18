@@ -1,22 +1,22 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, ClassSerializerInterceptor } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
+
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { AppConfigModule } from './config/config.module';
-import { AppLoggerModule } from './infra/logger/logger.module';
-import { DatabaseModule } from './infra/database/database.module';
 import { AppCacheModule } from './infra/cache/cache.module';
+import { DatabaseModule } from './infra/database/database.module';
+import { HealthModule } from './infra/health/health.module';
+import { AppLoggerModule } from './infra/logger/logger.module';
 import { MetricsModule } from './infra/metrics/metrics.module';
 import { QueueModule } from './infra/queue/queue.module';
-import { HealthModule } from './infra/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { ProjectsModule } from './modules/projects/projects.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { ProjectsModule } from './modules/projects/projects.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [

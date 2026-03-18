@@ -9,17 +9,18 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
+
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { TokenPairDto } from './dto/token-pair.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
-import { Public } from '../../common/decorators/public.decorator';
-import { CurrentUser, AuthenticatedUser } from '../../common/decorators/current-user.decorator';
-import { UserEntity } from '../users/entities/user.entity';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshUser } from './strategies/jwt-refresh.strategy';
+import { CurrentUser, AuthenticatedUser } from '../../common/decorators/current-user.decorator';
+import { Public } from '../../common/decorators/public.decorator';
+import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
+import { UserEntity } from '../users/entities/user.entity';
 
 @ApiTags('Auth')
 @Controller('auth')

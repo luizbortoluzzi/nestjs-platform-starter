@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+
 import { Request, Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 
@@ -98,7 +99,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const res = exception.getResponse();
 
     if (typeof res === 'string') {
-      return { status, error: HttpStatus[status], message: res };
+      return { status, error: HttpStatus[status] ?? String(status), message: res };
     }
 
     const body = res as Record<string, unknown>;

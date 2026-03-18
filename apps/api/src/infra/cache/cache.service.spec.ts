@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppCacheService } from './cache.service';
+
 import { REDIS_CLIENT } from './cache.constants';
+import { AppCacheService } from './cache.service';
 import { AppConfigService } from '../../config/config.service';
 
 const mockRedis = {

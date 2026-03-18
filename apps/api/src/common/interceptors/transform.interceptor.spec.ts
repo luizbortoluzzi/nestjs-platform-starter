@@ -1,6 +1,7 @@
 import { ExecutionContext, CallHandler } from '@nestjs/common';
-import { of } from 'rxjs';
-import { lastValueFrom } from 'rxjs';
+
+import { of, lastValueFrom } from 'rxjs';
+
 import { TransformInterceptor } from './transform.interceptor';
 
 function makeContext(reqOverrides = {}): ExecutionContext {

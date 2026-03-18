@@ -13,10 +13,10 @@ describe('JwtStrategy', () => {
     strategy = new JwtStrategy(mockConfig as never);
   });
 
-  it('validate returns AuthenticatedUser from the JWT payload', async () => {
+  it('validate returns AuthenticatedUser from the JWT payload', () => {
     const payload: JwtPayload = { sub: 'user-1', email: 'alice@example.com', role: UserRole.USER };
 
-    const result = await strategy.validate(payload);
+    const result = strategy.validate(payload);
 
     expect(result).toEqual({ id: 'user-1', email: 'alice@example.com', role: UserRole.USER });
   });

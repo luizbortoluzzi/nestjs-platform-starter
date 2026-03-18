@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Lint
-        run: npx eslint "src/**/*.ts"
+        run: npx eslint "src/**/*.ts" --max-warnings 0
 
   # ─── Test ──────────────────────────────────────────────────────────────────
   # Unit tests with Jest + coverage enforcement.

@@ -1,5 +1,6 @@
-import { EmailProcessor } from './email.processor';
 import { Job } from 'bullmq';
+
+import { EmailProcessor } from './email.processor';
 import { JOB_NAMES } from '../queue.constants';
 
 // Mock withRetry to avoid real async delays and to control failure scenarios.

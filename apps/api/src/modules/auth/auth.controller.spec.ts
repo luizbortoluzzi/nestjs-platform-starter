@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { AppCacheService } from '../../infra/cache/cache.service';
 import { RegisterDto } from './dto/register.dto';
-import { UserEntity, UserRole } from '../users/entities/user.entity';
-import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
 import { RefreshUser } from './strategies/jwt-refresh.strategy';
+import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
+import { AppCacheService } from '../../infra/cache/cache.service';
+import { UserEntity, UserRole } from '../users/entities/user.entity';
 
 const TOKEN_PAIR = { accessToken: 'access', refreshToken: 'refresh' };
 

@@ -1,4 +1,5 @@
 import { register } from 'prom-client';
+
 import { MetricsService } from './metrics.service';
 
 describe('MetricsService', () => {

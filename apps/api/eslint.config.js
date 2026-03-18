@@ -1,12 +1,14 @@
-// ESLint v9 flat config — replaces .eslintrc.* from previous ESLint versions.
 // @ts-check
+// ESLint v9 flat config — type-aware, import ordering, unused imports.
 const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
+const importPlugin = require('eslint-plugin-import');
+const unusedImports = require('eslint-plugin-unused-imports');
 const prettierConfig = require('eslint-config-prettier');
 
 /** @type {import('eslint').Linter.Config[]} */
 module.exports = [
-  // ─── Global ignores ──────────────────────────────────────────────────────
+  // ─── Global ignores ───────────────────────────────────────────────────────
   {
     ignores: ['dist/', 'coverage/', 'node_modules/'],
   },
@@ -16,31 +18,82 @@ module.exports = [
     files: ['src/**/*.ts', 'test/**/*.ts'],
     languageOptions: {
       parser: tsParser,
-      // No `project` option here — avoids slow type-aware linting in CI.
-      // Add parserOptions: { project: './tsconfig.json' } when you need
-      // type-aware rules (e.g. @typescript-eslint/no-floating-promises).
+      parserOptions: {
+        // Type-aware linting — enables the most valuable rule category.
+        // Slower than plain parsing but catches real runtime bugs (unhandled
+        // promises, misused async callbacks, awaiting non-Promises, etc.).
+        project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
+      import: importPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
-      // ── Error-level: catches real bugs ──────────────────────────────────
-      // Unused variables are almost always a mistake. Prefix with _ to opt out.
-      '@typescript-eslint/no-unused-vars': [
+      // ── Unused symbols ──────────────────────────────────────────────────
+      // unused-imports handles both imports and variables in one pass.
+      // Prefix names with _ to opt out of the check.
+      'unused-imports/no-unused-imports': 'error',
+      '@typescript-eslint/no-unused-vars': 'off', // delegated to unused-imports
+      'unused-imports/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
 
-      // ── Warn-level: advisory style guidance ─────────────────────────────
-      // `any` weakens type safety but is sometimes necessary (e.g. ioredis
-      // callbacks). Warn rather than error to avoid blocking iterative work.
+      // ── Type-aware rules (require parserOptions.project) ────────────────
+      // Highest-value category — catches real runtime crashes at lint time.
+
+      // Unhandled promise rejections are silent runtime bombs.
+      '@typescript-eslint/no-floating-promises': 'error',
+
+      // async function passed where sync callback expected (e.g. forEach).
+      // attributes: false — allows async NestJS lifecycle hooks in decorators.
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: { attributes: false } },
+      ],
+
+      // Prevents `await` on non-Promise values.
+      '@typescript-eslint/await-thenable': 'error',
+
+      // Flags async functions that never await anything.
+      '@typescript-eslint/require-await': 'error',
+
+      // ── Explicit any ────────────────────────────────────────────────────
+      // no-explicit-any: warn only — NestJS/Express boundaries are legitimately any.
+      // no-unsafe-assignment / no-unsafe-return are deliberately omitted:
+      // framework glue (ExecutionContext, req, res) is typed as any at the
+      // Express layer and suppressing it per-line would be more noise than value.
       '@typescript-eslint/no-explicit-any': 'warn',
 
-      // Empty catch blocks and lifecycle stubs are common in NestJS; warn only.
-      '@typescript-eslint/no-empty-function': 'warn',
+      // ── Empty functions ─────────────────────────────────────────────────
+      '@typescript-eslint/no-empty-function': [
+        'warn',
+        { allow: ['constructors', 'arrowFunctions'] },
+      ],
+
+      // ── Import ordering ─────────────────────────────────────────────────
+      // Groups: Node built-ins → third-party → internal paths.
+      // Blank line required between groups; alphabetical within each group.
+      'import/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'internal', ['parent', 'sibling'], 'index'],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true },
+          pathGroups: [
+            // Keep @nestjs/* grouped with other externals at the top.
+            { pattern: '@nestjs/**', group: 'external', position: 'before' },
+          ],
+          pathGroupsExcludedImportTypes: ['builtin'],
+        },
+      ],
+      'import/no-duplicates': 'error',
     },
   },
 
-  // ─── Prettier — must be last so it overrides any conflicting style rules ──
+  // ─── Prettier — must be last so it overrides conflicting style rules ──────
   prettierConfig,
 ];

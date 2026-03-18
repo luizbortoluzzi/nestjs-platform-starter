@@ -4,8 +4,9 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { of } from 'rxjs';
-import { lastValueFrom } from 'rxjs';
+
+import { of, lastValueFrom } from 'rxjs';
+
 import { IdempotencyInterceptor } from './idempotency.interceptor';
 
 const LOCK = '__PROCESSING__';

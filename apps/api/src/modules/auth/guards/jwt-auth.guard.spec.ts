@@ -1,10 +1,10 @@
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 function makeContext(): ExecutionContext {
   return {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     getHandler: () => () => {},
     getClass: () => ({}),
   } as unknown as ExecutionContext;
@@ -36,7 +36,7 @@ describe('JwtAuthGuard', () => {
       .spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate')
       .mockReturnValue(true);
 
-    guard.canActivate(makeContext());
+    void guard.canActivate(makeContext());
 
     expect(superSpy).toHaveBeenCalled();
     superSpy.mockRestore();

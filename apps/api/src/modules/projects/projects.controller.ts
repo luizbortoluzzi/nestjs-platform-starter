@@ -12,11 +12,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
-import { ProjectsService } from './projects.service';
+
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectsService } from './projects.service';
 import { CurrentUser, AuthenticatedUser } from '../../common/decorators/current-user.decorator';
+import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
 
 // All routes inherit the global JwtAuthGuard — no @Public() needed here.
 @ApiTags('Projects')

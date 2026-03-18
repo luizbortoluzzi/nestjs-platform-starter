@@ -1,24 +1,30 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
+import { Injectable, ConflictException, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Queue } from 'bullmq';
+
 import * as bcrypt from 'bcryptjs';
-import { UsersService } from '../users/users.service';
-import { UserEntity } from '../users/entities/user.entity';
-import { AppConfigService } from '../../config/config.service';
-import { QUEUE_NAMES, JOB_NAMES } from '../../infra/queue/queue.constants';
-import { WelcomeEmailJobPayload } from '../../infra/queue/jobs/welcome-email.job';
+import { Queue } from 'bullmq';
+import { DataSource, EntityManager } from 'typeorm';
+
 import { RegisterDto } from './dto/register.dto';
 import { TokenPairDto } from './dto/token-pair.dto';
 import { JwtPayload, JwtRefreshPayload } from './interfaces/jwt-payload.interface';
+import { AppConfigService } from '../../config/config.service';
+import { WelcomeEmailJobPayload } from '../../infra/queue/jobs/welcome-email.job';
+import { QUEUE_NAMES, JOB_NAMES } from '../../infra/queue/queue.constants';
+import { UserEntity } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: AppConfigService,
     @InjectQueue(QUEUE_NAMES.EMAILS) private readonly emailsQueue: Queue,
+    private readonly dataSource: DataSource,
   ) {}
 
   // ─── Public API ─────────────────────────────────────────────────────────────
@@ -29,24 +35,43 @@ export class AuthService {
       throw new ConflictException('An account with this email already exists');
     }
 
+    // Hash password before opening the transaction to keep the critical
+    // section short (bcrypt is CPU-bound and slow by design).
     const passwordHash = await bcrypt.hash(dto.password, 12);
-    const user = await this.usersService.create({
-      email: dto.email,
-      passwordHash,
-      name: dto.name,
-    });
 
-    // Issue tokens and enqueue the welcome email concurrently.
-    // The job is fire-and-forget — a failure to enqueue does NOT block
-    // the registration response. The job will be retried by BullMQ.
-    const [tokens] = await Promise.all([
-      this.issueTokenPair(user),
-      this.emailsQueue.add(JOB_NAMES.WELCOME_EMAIL, {
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-      } satisfies WelcomeEmailJobPayload),
-    ]);
+    // Wrap user creation + refresh-token hash in a single transaction so that
+    // a partial failure (e.g. DB crash between INSERT and UPDATE) cannot leave
+    // the row without a valid session state.
+    const { tokens, userId, email, name } = await this.dataSource.transaction(
+      async (manager: EntityManager) => {
+        const user = manager.create(UserEntity, {
+          email: dto.email,
+          passwordHash,
+          name: dto.name,
+        });
+        const saved = await manager.save(user);
+
+        const accessToken = this.signAccessToken(saved);
+        const refreshToken = this.signRefreshToken(saved);
+        const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+        await manager.update(UserEntity, saved.id, { refreshTokenHash });
+
+        return {
+          tokens: { accessToken, refreshToken } satisfies TokenPairDto,
+          userId: saved.id,
+          email: saved.email,
+          name: saved.name,
+        };
+      },
+    );
+
+    // Enqueue welcome email after the transaction commits — fire-and-forget.
+    // BullMQ persists the job; a transient Redis failure is not fatal.
+    void this.emailsQueue
+      .add(JOB_NAMES.WELCOME_EMAIL, { userId, email, name } satisfies WelcomeEmailJobPayload)
+      .catch((err: unknown) =>
+        this.logger.warn(`Failed to enqueue welcome email for ${email}: ${String(err)}`),
+      );
 
     return tokens;
   }

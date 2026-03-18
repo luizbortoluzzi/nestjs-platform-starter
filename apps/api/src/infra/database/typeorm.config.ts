@@ -1,6 +1,7 @@
-import { DataSource } from 'typeorm';
-import * as dotenv from 'dotenv';
 import * as path from 'path';
+
+import * as dotenv from 'dotenv';
+import { DataSource } from 'typeorm';
 
 // Resolve .env relative to this file so the CLI works from any working directory,
 // not just from apps/api/. Without an explicit path, dotenv.config() looks in

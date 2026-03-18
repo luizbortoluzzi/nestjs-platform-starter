@@ -1,6 +1,7 @@
 import { ExecutionContext, CallHandler } from '@nestjs/common';
-import { of } from 'rxjs';
-import { lastValueFrom } from 'rxjs';
+
+import { of, lastValueFrom } from 'rxjs';
+
 import { MetricsInterceptor } from './metrics.interceptor';
 
 function makeContext(path: string, method = 'GET', routePath?: string): ExecutionContext {

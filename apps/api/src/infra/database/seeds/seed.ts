@@ -16,9 +16,10 @@
  */
 
 import * as bcrypt from 'bcryptjs';
-import dataSource from '../typeorm.config';
-import { UserEntity, UserRole } from '../../../modules/users/entities/user.entity';
+
 import { ProjectEntity, ProjectStatus } from '../../../modules/projects/entities/project.entity';
+import { UserEntity, UserRole } from '../../../modules/users/entities/user.entity';
+import dataSource from '../typeorm.config';
 
 async function seed(): Promise<void> {
   await dataSource.initialize();

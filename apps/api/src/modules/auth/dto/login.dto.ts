@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
 // NOTE: This DTO's validators are NOT enforced by the global ValidationPipe

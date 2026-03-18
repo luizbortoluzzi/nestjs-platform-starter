@@ -1,8 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ProjectsService } from './projects.service';
+
 import { ProjectEntity, ProjectStatus } from './entities/project.entity';
+import { ProjectsService } from './projects.service';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 

@@ -1,11 +1,12 @@
 import { INestApplication, ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+
 import { AppModule } from '../../src/app.module';
 import { HttpExceptionFilter } from '../../src/common/filters/http-exception.filter';
 import { MetricsInterceptor } from '../../src/common/interceptors/metrics.interceptor';
-import { MetricsService } from '../../src/metrics/metrics.service';
 import { TransformInterceptor } from '../../src/common/interceptors/transform.interceptor';
+import { MetricsService } from '../../src/infra/metrics/metrics.service';
 
 /**
  * Creates a fully configured NestJS test application that mirrors the
@@ -26,7 +27,7 @@ export async function createTestApp(): Promise<INestApplication> {
     imports: [AppModule],
   })
     // Silence NestJS internal logs during tests — change to 'verbose' to debug.
-    .setLogger(false)
+    .setLogger(false as never)
     .compile();
 
   const app = moduleFixture.createNestApplication();

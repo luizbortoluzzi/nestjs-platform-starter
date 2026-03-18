@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository } from 'typeorm';
+
 import { UserEntity } from './entities/user.entity';
 import { CreateUserData } from './interfaces/create-user.interface';
 import { UpdateUserData } from './interfaces/update-user.interface';
@@ -28,8 +30,9 @@ export class UsersService {
   }
 
   async update(id: string, data: UpdateUserData): Promise<UserEntity> {
-    await this.userRepository.update(id, data);
-    return this.findById(id);
+    const user = await this.findById(id);
+    Object.assign(user, data);
+    return this.userRepository.save(user);
   }
 
   /**

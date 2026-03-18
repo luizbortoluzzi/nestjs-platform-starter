@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository } from 'typeorm';
-import { ProjectEntity } from './entities/project.entity';
+
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectEntity } from './entities/project.entity';
 
 @Injectable()
 export class ProjectsService {

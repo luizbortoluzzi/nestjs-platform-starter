@@ -1,5 +1,6 @@
-import { NotificationProcessor } from './notification.processor';
 import { Job } from 'bullmq';
+
+import { NotificationProcessor } from './notification.processor';
 
 function makeJob(name: string, data: unknown = {}): Job {
   return { id: 'job-1', name, data, attemptsMade: 0 } as unknown as Job;

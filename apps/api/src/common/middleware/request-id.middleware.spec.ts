@@ -1,5 +1,6 @@
-import { RequestIdMiddleware } from './request-id.middleware';
 import { Request, Response, NextFunction } from 'express';
+
+import { RequestIdMiddleware } from './request-id.middleware';
 
 const makeReq = (overrides: Partial<Request> = {}): Request =>
   ({
@@ -7,7 +8,6 @@ const makeReq = (overrides: Partial<Request> = {}): Request =>
     ...overrides,
   }) as unknown as Request;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop: NextFunction = () => {};
 
 describe('RequestIdMiddleware', () => {

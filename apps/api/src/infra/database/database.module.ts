@@ -1,5 +1,6 @@
 import { Global, Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppConfigService } from '../../config/config.service';
 
 @Global()

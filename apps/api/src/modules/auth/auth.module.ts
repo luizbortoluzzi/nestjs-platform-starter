@@ -1,18 +1,19 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { AppConfigService } from '../../config/config.service';
-import { CommonModule } from '../../common/common.module';
-import { UsersModule } from '../users/users.module';
-import { QueueModule } from '../../infra/queue/queue.module';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { CommonModule } from '../../common/common.module';
+import { AppConfigService } from '../../config/config.service';
+import { QueueModule } from '../../infra/queue/queue.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [

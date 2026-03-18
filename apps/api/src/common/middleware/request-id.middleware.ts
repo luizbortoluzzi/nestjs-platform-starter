@@ -1,6 +1,8 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
+
+import { Injectable, NestMiddleware } from '@nestjs/common';
+
+import { Request, Response, NextFunction } from 'express';
 
 /**
  * Exposes the request correlation ID as req.requestId for use in filters,

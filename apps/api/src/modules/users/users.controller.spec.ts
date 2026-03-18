@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity, UserRole } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserEntity, UserRole } from './entities/user.entity';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 function makeUser(): UserEntity {
   return Object.assign(new UserEntity(), {

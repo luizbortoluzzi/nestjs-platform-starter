@@ -1,7 +1,9 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+
+import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { Request, Response } from 'express';
+
 import { MetricsService } from '../../infra/metrics/metrics.service';
 
 /**

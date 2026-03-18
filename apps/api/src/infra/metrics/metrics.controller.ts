@@ -1,9 +1,11 @@
 import { Controller, Get, Res } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
-import { Response } from 'express';
 import { ApiExcludeController } from '@nestjs/swagger';
-import { Public } from '../../common/decorators/public.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
+
+import { Response } from 'express';
+
 import { MetricsService } from './metrics.service';
+import { Public } from '../../common/decorators/public.decorator';
 
 /**
  * Exposes Prometheus metrics at GET /api/v1/metrics.

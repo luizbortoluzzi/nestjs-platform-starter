@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProjectsController } from './projects.controller';
-import { ProjectsService } from './projects.service';
-import { AppCacheService } from '../../infra/cache/cache.service';
-import { ProjectEntity, ProjectStatus } from './entities/project.entity';
-import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
-import { UserRole } from '../users/entities/user.entity';
+
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectEntity, ProjectStatus } from './entities/project.entity';
+import { ProjectsController } from './projects.controller';
+import { ProjectsService } from './projects.service';
+import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
+import { AppCacheService } from '../../infra/cache/cache.service';
+import { UserRole } from '../users/entities/user.entity';
 
 const PROJECT_ID = 'proj-uuid-1';
 

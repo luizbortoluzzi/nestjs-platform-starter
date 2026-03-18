@@ -1,7 +1,9 @@
-import { Global, Module } from '@nestjs/common';
-import { LoggerModule } from 'nestjs-pino';
 import { randomUUID } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
+
+import { Global, Module } from '@nestjs/common';
+
+import { LoggerModule } from 'nestjs-pino';
 
 // Health probe paths generate constant traffic and add no signal to the access
 // log — suppress them so they don't dilute production log volumes.

@@ -1,8 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { UsersService } from './users.service';
+
 import { UserEntity, UserRole } from './entities/user.entity';
+import { UsersService } from './users.service';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -112,13 +113,15 @@ describe('UsersService', () => {
 
   describe('update', () => {
     it('applies changes and returns the updated user', async () => {
-      const updated = makeUser({ name: 'Alice Updated' });
-      repo.findOne.mockResolvedValue(updated);
+      const existing = makeUser();
+      repo.findOne.mockResolvedValue(existing);
+      repo.save.mockResolvedValue({ ...existing, name: 'Alice Updated' });
 
       const result = await service.update('user-uuid-1', { name: 'Alice Updated' });
 
-      expect(repo.update).toHaveBeenCalledWith('user-uuid-1', { name: 'Alice Updated' });
-      expect(result).toBe(updated);
+      expect(repo.findOne).toHaveBeenCalledWith({ where: { id: 'user-uuid-1' } });
+      expect(repo.save).toHaveBeenCalled();
+      expect(result.name).toBe('Alice Updated');
     });
 
     it('throws NotFoundException when the user to update does not exist', async () => {
