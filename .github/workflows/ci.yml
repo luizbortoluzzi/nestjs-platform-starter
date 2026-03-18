@@ -40,8 +40,8 @@ jobs:
         run: npx eslint "src/**/*.ts"
 
   # ─── Test ──────────────────────────────────────────────────────────────────
-  # Unit tests with Jest. --passWithNoTests allows the job to succeed while the
-  # test suite is being built out — remove that flag once tests exist.
+  # Unit tests with Jest + coverage enforcement.
+  # Fails if any *.service.ts file in src/modules/ drops below 80% coverage.
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -60,8 +60,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test -- --passWithNoTests
+      - name: Run tests with coverage
+        run: npm test -- --coverage --forceExit
 
   # ─── Build ─────────────────────────────────────────────────────────────────
   # Validates that the TypeScript project compiles cleanly via `nest build`.

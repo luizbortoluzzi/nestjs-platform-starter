@@ -1,1 +1,1 @@
-cd apps/api && npx lint-staged
+cd apps/api && npx lint-staged && npm test -- --coverage --forceExit
