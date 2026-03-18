@@ -3,7 +3,7 @@
  * Kept minimal — only stable, non-sensitive identifiers.
  */
 export interface JwtPayload {
-  sub: string;   // user UUID
+  sub: string; // user UUID
   email: string;
   role: string;
 }
@@ -14,5 +14,5 @@ export interface JwtPayload {
  * additional claims are re-fetched from the database on every refresh.
  */
 export interface JwtRefreshPayload {
-  sub: string;   // user UUID
+  sub: string; // user UUID
 }

@@ -1,16 +1,8 @@
 import { Controller, Get, Patch, Body } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {
-  CurrentUser,
-  AuthenticatedUser,
-} from '../../common/decorators/current-user.decorator';
+import { CurrentUser, AuthenticatedUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth('access-token')
@@ -30,10 +22,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Update the authenticated user profile' })
   @ApiResponse({ status: 200, description: 'Profile updated.' })
   @ApiResponse({ status: 401, description: 'Not authenticated.' })
-  updateMe(
-    @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: UpdateUserDto,
-  ) {
+  updateMe(@CurrentUser() user: AuthenticatedUser, @Body() dto: UpdateUserDto) {
     return this.usersService.update(user.id, dto);
   }
 

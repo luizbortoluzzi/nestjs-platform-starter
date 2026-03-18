@@ -12,10 +12,7 @@
  *   maxDelayMs: 2_000,
  * });
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {},
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const { attempts = 3, baseDelayMs = 100, maxDelayMs = 5_000, shouldRetry } = options;
 
   let lastError: unknown;

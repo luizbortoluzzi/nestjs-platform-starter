@@ -64,9 +64,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         exception instanceof Error ? exception.stack : String(exception),
       );
     } else {
-      this.logger.warn(
-        `${request.method} ${request.url} → ${status}${durationStr} [${requestId}]`,
-      );
+      this.logger.warn(`${request.method} ${request.url} → ${status}${durationStr} [${requestId}]`);
     }
 
     response.status(status).json({

@@ -179,7 +179,7 @@ describe('Platform API (e2e)', () => {
       createdProjectId = res.body.data.id;
     });
 
-    it('GET /api/v1/projects — 200 lists only the caller's projects', async () => {
+    it("GET /api/v1/projects — 200 lists only the caller's projects", async () => {
       const res = await request(app.getHttpServer())
         .get('/api/v1/projects')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -240,9 +240,7 @@ describe('Platform API (e2e)', () => {
 
   describe('Health', () => {
     it('GET /api/v1/health/live — 200', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/api/v1/health/live')
-        .expect(200);
+      const res = await request(app.getHttpServer()).get('/api/v1/health/live').expect(200);
       expect(res.body.status).toBe('ok');
     });
   });
