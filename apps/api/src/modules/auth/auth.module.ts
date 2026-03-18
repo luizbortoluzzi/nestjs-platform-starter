@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AppConfigService } from '../../config/config.service';
 import { UsersModule } from '../users/users.module';
+import { QueueModule } from '../../queue/queue.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -15,6 +16,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 @Module({
   imports: [
     UsersModule,
+    QueueModule,
     PassportModule,
     // JwtModule is configured for access token signing.
     // Refresh tokens are signed manually in AuthService with a separate secret.

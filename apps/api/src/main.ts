@@ -4,6 +4,8 @@ import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/config.service';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
+import { MetricsService } from './metrics/metrics.service';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
@@ -48,12 +50,14 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // ─── Global interceptors ──────────────────────────────────
-  // Execution order on the response path (innermost → outermost):
-  //   1. ClassSerializerInterceptor — strips @Exclude() fields from entities
+  // Execution order (first registered = outermost wrapper):
+  //   1. MetricsInterceptor          — times every request, outermost so it
+  //                                    captures total latency including all others
   //   2. TransformInterceptor        — wraps data in { data, statusCode, timestamp }
-  // HTTP access logging is handled by pino-http (AppLoggerModule) — no
-  // separate LoggingInterceptor needed.
+  //   3. ClassSerializerInterceptor  — strips @Exclude() fields from entities
+  // HTTP access logging is handled by pino-http (AppLoggerModule).
   app.useGlobalInterceptors(
+    new MetricsInterceptor(app.get(MetricsService)),
     new TransformInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
@@ -66,6 +70,7 @@ async function bootstrap() {
   const logger = app.get(Logger);
   logger.log(`Running on  http://localhost:${port}/api/v1`, 'Bootstrap');
   logger.log(`Health:     http://localhost:${port}/api/v1/health/live`, 'Bootstrap');
+  logger.log(`Metrics:    http://localhost:${port}/api/v1/metrics`, 'Bootstrap');
   logger.log(`Env:        ${nodeEnv}`, 'Bootstrap');
 }
 

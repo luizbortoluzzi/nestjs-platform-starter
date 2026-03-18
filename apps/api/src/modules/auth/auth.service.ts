@@ -3,11 +3,15 @@ import {
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
 import { JwtService } from '@nestjs/jwt';
+import { Queue } from 'bullmq';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { AppConfigService } from '../../config/config.service';
+import { QUEUE_NAMES, JOB_NAMES } from '../../queue/queue.constants';
+import { WelcomeEmailJobPayload } from '../../queue/jobs/welcome-email.job';
 import { RegisterDto } from './dto/register.dto';
 import { TokenPairDto } from './dto/token-pair.dto';
 import { JwtPayload, JwtRefreshPayload } from './interfaces/jwt-payload.interface';
@@ -18,6 +22,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: AppConfigService,
+    @InjectQueue(QUEUE_NAMES.EMAILS) private readonly emailsQueue: Queue,
   ) {}
 
   // ─── Public API ─────────────────────────────────────────────────────────────
@@ -35,7 +40,19 @@ export class AuthService {
       name: dto.name,
     });
 
-    return this.issueTokenPair(user);
+    // Issue tokens and enqueue the welcome email concurrently.
+    // The job is fire-and-forget — a failure to enqueue does NOT block
+    // the registration response. The job will be retried by BullMQ.
+    const [tokens] = await Promise.all([
+      this.issueTokenPair(user),
+      this.emailsQueue.add(JOB_NAMES.WELCOME_EMAIL, {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+      } satisfies WelcomeEmailJobPayload),
+    ]);
+
+    return tokens;
   }
 
   async login(user: UserEntity): Promise<TokenPairDto> {

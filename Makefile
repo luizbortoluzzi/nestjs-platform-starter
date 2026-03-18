@@ -4,7 +4,7 @@ API_DIR  := apps/api
 .DEFAULT_GOAL := help
 
 .PHONY: help env dev infra-up infra-down up up-build down reset logs logs-api \
-        install build test lint migrate migrate-revert
+        install build test lint migrate migrate-revert prometheus
 
 # ─── Help ──────────────────────────────────────────────────────────────────
 
@@ -48,6 +48,9 @@ logs: ## Follow logs from all containers
 
 logs-api: ## Follow API container logs only
 	$(COMPOSE) logs -f api
+
+prometheus: ## Open Prometheus UI in the browser
+	xdg-open http://localhost:9090 2>/dev/null || open http://localhost:9090 2>/dev/null || true
 
 # ─── Application ───────────────────────────────────────────────────────────
 

@@ -5,6 +5,7 @@ import { AppConfigModule } from './config/config.module';
 import { AppLoggerModule } from './logger/logger.module';
 import { DatabaseModule } from './database/database.module';
 import { AppCacheModule } from './cache/cache.module';
+import { MetricsModule } from './metrics/metrics.module';
 import { QueueModule } from './queue/queue.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     AppLoggerModule,
     DatabaseModule,
     AppCacheModule,
+    MetricsModule,
     QueueModule,
 
     // Domain modules

@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: nestjs-platform-api
+    static_configs:
+      - targets:
+          - api:6000
+    metrics_path: /api/v1/metrics
+    # No auth header needed — MetricsController is @Public().
+    # In production, restrict /api/v1/metrics at the ingress/network level
+    # (e.g. internal service mesh, VPC-only route, or nginx allow/deny).

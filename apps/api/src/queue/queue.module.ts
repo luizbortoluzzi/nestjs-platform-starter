@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { AppConfigService } from '../config/config.service';
 import { QUEUE_NAMES } from './queue.constants';
+import { EmailProcessor } from './processors/email.processor';
 import { NotificationProcessor } from './processors/notification.processor';
 
 // Not @Global() — queues are application-level resources, not infrastructure
@@ -44,7 +45,7 @@ import { NotificationProcessor } from './processors/notification.processor';
       { name: QUEUE_NAMES.EMAILS },
     ),
   ],
-  providers: [NotificationProcessor],
+  providers: [EmailProcessor, NotificationProcessor],
   exports: [BullModule],
 })
 export class QueueModule {}
