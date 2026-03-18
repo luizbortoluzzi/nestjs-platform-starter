@@ -1,0 +1,21 @@
+# Dependencies — reinstalled inside the image via npm ci
+node_modules/
+
+# Compiled output — rebuilt inside the image via nest build
+dist/
+
+# Environment files — never bake secrets into the image;
+# inject them at runtime via docker-compose env_file or orchestrator secrets
+.env
+.env.*
+
+# Test artifacts
+coverage/
+test/
+**/*.spec.ts
+**/*.e2e-spec.ts
+
+# Development tooling not needed at runtime
+*.md
+.eslintrc*
+jest.config*
