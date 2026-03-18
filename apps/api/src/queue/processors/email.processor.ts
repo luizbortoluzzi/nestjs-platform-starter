@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { QUEUE_NAMES, JOB_NAMES } from '../queue.constants';
 import { WelcomeEmailJobPayload } from '../jobs/welcome-email.job';
+import { withRetry } from '../../common/utils/retry.util';
 
 @Processor(QUEUE_NAMES.EMAILS, {
   // Limit concurrent email jobs — avoids hammering the email provider
@@ -36,11 +37,19 @@ export class EmailProcessor extends WorkerHost {
     this.logger.log(`Sending welcome email to ${name} <${email}> (userId: ${userId})`);
 
     // ─── Email provider integration goes here ────────────────────────────────
-    // Replace this stub with a call to your email provider, e.g.:
+    // Replace simulateSend() with a real provider call, e.g.:
     //   await this.mailerService.send({ to: email, template: 'welcome', ... })
-    // The job will be retried automatically on failure (see QueueModule defaults:
-    //   attempts: 3, backoff: exponential 1s → 2s → 4s).
-    await simulateSend(email);
+    //
+    // Two-level retry:
+    //  Inner (withRetry): fast retries for transient provider errors (network
+    //    blips, 5xx responses) — 3 attempts, 100 ms base, capped at 2 s.
+    //  Outer (BullMQ job): slow retries for more persistent failures — 3
+    //    attempts, exponential back-off starting at 1 s (see QueueModule).
+    await withRetry(() => simulateSend(email), {
+      attempts: 3,
+      baseDelayMs: 100,
+      maxDelayMs: 2_000,
+    });
 
     this.logger.log(`Welcome email delivered to ${name} <${email}>`);
   }

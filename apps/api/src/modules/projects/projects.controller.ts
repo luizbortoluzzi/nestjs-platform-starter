@@ -9,7 +9,9 @@ import {
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
+import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -27,6 +29,7 @@ export class ProjectsController {
    * Create a new project owned by the authenticated user.
    */
   @Post()
+  @UseInterceptors(IdempotencyInterceptor)
   @HttpCode(HttpStatus.CREATED)
   create(
     @CurrentUser() user: AuthenticatedUser,

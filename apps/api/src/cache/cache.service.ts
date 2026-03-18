@@ -58,6 +58,17 @@ export class AppCacheService {
   }
 
   /**
+   * SET key value NX EX ttlSeconds — atomic "set only if absent".
+   * Returns true if the key was set (i.e. did not previously exist),
+   * false if the key already existed (no-op).
+   */
+  async setIfNotExists(key: string, value: unknown, ttlSeconds: number): Promise<boolean> {
+    const serialized = JSON.stringify(value);
+    const result = await this.redis.set(key, serialized, 'EX', ttlSeconds, 'NX');
+    return result === 'OK';
+  }
+
+  /**
    * Flushes the entire database.
    * For test teardown only — never call this in production application code.
    */

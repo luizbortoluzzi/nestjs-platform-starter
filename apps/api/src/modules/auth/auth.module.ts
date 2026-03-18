@@ -12,6 +12,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
     JwtAuthGuard,
     JwtRefreshGuard,
     LocalAuthGuard,
+    IdempotencyInterceptor,
   ],
   exports: [AuthService, JwtAuthGuard],
 })

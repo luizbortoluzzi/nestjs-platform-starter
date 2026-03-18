@@ -1,4 +1,5 @@
 import { Controller, Get, Res } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { Public } from '../common/decorators/public.decorator';
 import { MetricsService } from './metrics.service';
@@ -13,6 +14,9 @@ import { MetricsService } from './metrics.service';
  * Uses @Res() to bypass the TransformInterceptor — Prometheus expects
  * raw text, not the standard { data, statusCode, timestamp } envelope.
  */
+// Prometheus scrapes this endpoint every scrape_interval (default 15s).
+// Skip rate limiting so the scraper never trips the throttler.
+@SkipThrottle()
 @Controller('metrics')
 export class MetricsController {
   constructor(private readonly metricsService: MetricsService) {}

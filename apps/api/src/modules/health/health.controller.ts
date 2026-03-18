@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import {
   HealthCheck,
   HealthCheckService,
@@ -12,6 +13,9 @@ import { RedisHealthIndicator } from './indicators/redis.health';
 // Adjust this threshold to match the memory limits of your deployment target.
 const HEAP_LIMIT_BYTES = 512 * 1024 * 1024; // 512 MB
 
+// Health probes are called every few seconds by orchestrators and load
+// balancers. Skip rate limiting so they never trip the throttler.
+@SkipThrottle()
 @Controller('health')
 export class HealthController {
   constructor(
