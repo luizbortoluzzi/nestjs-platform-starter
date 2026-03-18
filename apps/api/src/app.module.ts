@@ -2,6 +2,7 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { AppConfigModule } from './config/config.module';
+import { AppLoggerModule } from './logger/logger.module';
 import { DatabaseModule } from './database/database.module';
 import { AppCacheModule } from './cache/cache.module';
 import { QueueModule } from './queue/queue.module';
@@ -13,8 +14,9 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
-    // Infrastructure — order matters: config must be first
+    // Infrastructure — order matters: config first, then logger (depends on config env)
     AppConfigModule,
+    AppLoggerModule,
     DatabaseModule,
     AppCacheModule,
     QueueModule,

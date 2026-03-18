@@ -23,11 +23,15 @@ export class HealthController {
 
   /**
    * Liveness probe — answers: "Is the process alive?"
+   *
    * Intentionally lightweight: only confirms the Node.js event loop is
    * responding. No dependency checks. Used by Docker HEALTHCHECK and
-   * Kubernetes liveness probes.
+   * Kubernetes liveness probes. A failing liveness probe causes the
+   * container to be restarted.
+   *
+   * GET /api/v1/health/live
    */
-  @Get()
+  @Get('live')
   @Public()
   @HealthCheck()
   liveness() {

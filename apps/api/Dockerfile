@@ -43,6 +43,6 @@ EXPOSE 6000
 # Liveness check: confirms the event loop is responding.
 # Matches the /health liveness endpoint defined in HealthController.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -f http://localhost:6000/api/v1/health || exit 1
+  CMD curl -f http://localhost:6000/api/v1/health/live || exit 1
 
 CMD ["node", "dist/main"]

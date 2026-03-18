@@ -3,25 +3,25 @@ import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 
 /**
- * Attaches a correlation ID to every request and mirrors it in the response.
+ * Exposes the request correlation ID as req.requestId for use in filters,
+ * interceptors, and service-layer code.
  *
- * Behaviour:
- *  - If the caller supplies an X-Request-ID header (e.g. from a load balancer or
- *    API gateway), that value is re-used so the ID propagates end-to-end.
- *  - Otherwise a new UUID v4 is generated.
- *
- * Downstream code reads req.requestId (typed via src/@types/express/index.d.ts).
- * The ID is included in every log line and every API response body, so operators
- * can correlate client-reported errors with server-side logs without needing a
- * distributed tracing system.
+ * nestjs-pino (pino-http) registers its middleware before NestJS middleware
+ * and assigns req.id via genReqId (see AppLoggerModule). That genReqId already
+ * handles X-Request-ID forwarding and sets the response header. This middleware
+ * mirrors req.id → req.requestId so existing code reading req.requestId works
+ * unchanged, with a safe fallback if pino-http is absent.
  */
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction): void {
-    const id = (req.headers['x-request-id'] as string) || randomUUID();
-    req.requestId = id;
+  use(req: Request, _res: Response, next: NextFunction): void {
+    // pino-http sets req.id before NestJS middleware runs.
+    const pinoId = (req as unknown as { id?: unknown }).id;
+    req.requestId =
+      typeof pinoId === 'string' && pinoId
+        ? pinoId
+        : (req.headers['x-request-id'] as string) || randomUUID();
     req.startTime = Date.now();
-    res.setHeader('X-Request-ID', id);
     next();
   }
 }
