@@ -1,13 +1,8 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { Request, Response } from 'express';
-import { MetricsService } from '../../metrics/metrics.service';
+import { MetricsService } from '../../infra/metrics/metrics.service';
 
 /**
  * Records HTTP request metrics for every non-metrics route.

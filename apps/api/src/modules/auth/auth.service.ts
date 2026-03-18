@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  ConflictException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { JwtService } from '@nestjs/jwt';
 import { Queue } from 'bullmq';
@@ -10,8 +6,8 @@ import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { AppConfigService } from '../../config/config.service';
-import { QUEUE_NAMES, JOB_NAMES } from '../../queue/queue.constants';
-import { WelcomeEmailJobPayload } from '../../queue/jobs/welcome-email.job';
+import { QUEUE_NAMES, JOB_NAMES } from '../../infra/queue/queue.constants';
+import { WelcomeEmailJobPayload } from '../../infra/queue/jobs/welcome-email.job';
 import { RegisterDto } from './dto/register.dto';
 import { TokenPairDto } from './dto/token-pair.dto';
 import { JwtPayload, JwtRefreshPayload } from './interfaces/jwt-payload.interface';

@@ -17,8 +17,8 @@
 
 import * as bcrypt from 'bcryptjs';
 import dataSource from '../typeorm.config';
-import { UserEntity, UserRole } from '../../modules/users/entities/user.entity';
-import { ProjectEntity, ProjectStatus } from '../../modules/projects/entities/project.entity';
+import { UserEntity, UserRole } from '../../../modules/users/entities/user.entity';
+import { ProjectEntity, ProjectStatus } from '../../../modules/projects/entities/project.entity';
 
 async function seed(): Promise<void> {
   await dataSource.initialize();
@@ -42,7 +42,12 @@ async function seed(): Promise<void> {
   ]);
 
   const admin = await userRepo.save(
-    userRepo.create({ email: 'admin@example.com', passwordHash: adminHash, name: 'Platform Admin', role: UserRole.ADMIN }),
+    userRepo.create({
+      email: 'admin@example.com',
+      passwordHash: adminHash,
+      name: 'Platform Admin',
+      role: UserRole.ADMIN,
+    }),
   );
 
   const alice = await userRepo.save(
@@ -55,10 +60,27 @@ async function seed(): Promise<void> {
 
   // ─── Projects ───────────────────────────────────────────────────────────────
   await projectRepo.save([
-    projectRepo.create({ name: 'Website Redesign',  description: 'Redesign the company marketing site.', ownerId: alice.id }),
-    projectRepo.create({ name: 'Mobile App MVP',    description: 'Build the first version of the mobile app.', ownerId: alice.id }),
-    projectRepo.create({ name: 'API Integration',   description: 'Integrate with the payment provider.', status: ProjectStatus.ARCHIVED, ownerId: alice.id }),
-    projectRepo.create({ name: 'Internal Tooling',  description: 'Admin dashboard for ops team.', ownerId: bob.id }),
+    projectRepo.create({
+      name: 'Website Redesign',
+      description: 'Redesign the company marketing site.',
+      ownerId: alice.id,
+    }),
+    projectRepo.create({
+      name: 'Mobile App MVP',
+      description: 'Build the first version of the mobile app.',
+      ownerId: alice.id,
+    }),
+    projectRepo.create({
+      name: 'API Integration',
+      description: 'Integrate with the payment provider.',
+      status: ProjectStatus.ARCHIVED,
+      ownerId: alice.id,
+    }),
+    projectRepo.create({
+      name: 'Internal Tooling',
+      description: 'Admin dashboard for ops team.',
+      ownerId: bob.id,
+    }),
   ]);
 
   console.log('✓ Seeded users:');

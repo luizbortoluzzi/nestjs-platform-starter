@@ -2,7 +2,7 @@ import { Controller, Get, Res } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { ApiExcludeController } from '@nestjs/swagger';
-import { Public } from '../common/decorators/public.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { MetricsService } from './metrics.service';
 
 /**

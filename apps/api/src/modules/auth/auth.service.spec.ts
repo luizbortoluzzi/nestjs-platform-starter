@@ -6,7 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { AppConfigService } from '../../config/config.service';
-import { QUEUE_NAMES } from '../../queue/queue.constants';
+import { QUEUE_NAMES } from '../../infra/queue/queue.constants';
 import { UserEntity, UserRole } from '../users/entities/user.entity';
 
 // ─── bcrypt mock ─────────────────────────────────────────────────────────────

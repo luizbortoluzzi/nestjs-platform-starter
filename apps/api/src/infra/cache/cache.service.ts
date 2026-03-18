@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import Redis from 'ioredis';
 import { REDIS_CLIENT } from './cache.constants';
-import { AppConfigService } from '../config/config.service';
+import { AppConfigService } from '../../config/config.service';
 
 @Injectable()
 export class AppCacheService {
@@ -66,13 +66,5 @@ export class AppCacheService {
     const serialized = JSON.stringify(value);
     const result = await this.redis.set(key, serialized, 'EX', ttlSeconds, 'NX');
     return result === 'OK';
-  }
-
-  /**
-   * Flushes the entire database.
-   * For test teardown only — never call this in production application code.
-   */
-  async reset(): Promise<void> {
-    await this.redis.flushdb();
   }
 }

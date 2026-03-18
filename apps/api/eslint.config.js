@@ -2,6 +2,7 @@
 // @ts-check
 const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
+const prettierConfig = require('eslint-config-prettier');
 
 /** @type {import('eslint').Linter.Config[]} */
 module.exports = [
@@ -39,4 +40,7 @@ module.exports = [
       '@typescript-eslint/no-empty-function': 'warn',
     },
   },
+
+  // ─── Prettier — must be last so it overrides any conflicting style rules ──
+  prettierConfig,
 ];

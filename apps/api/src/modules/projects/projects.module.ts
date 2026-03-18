@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonModule } from '../../common/common.module';
 import { ProjectEntity } from './entities/project.entity';
 import { ProjectsService } from './projects.service';
 import { ProjectsController } from './projects.controller';
-import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProjectEntity])],
+  imports: [CommonModule, TypeOrmModule.forFeature([ProjectEntity])],
   controllers: [ProjectsController],
-  providers: [ProjectsService, IdempotencyInterceptor],
+  providers: [ProjectsService],
   exports: [ProjectsService],
 })
 export class ProjectsModule {}

@@ -1,10 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import {
-  Counter,
-  Histogram,
-  collectDefaultMetrics,
-  register,
-} from 'prom-client';
+import { Counter, Histogram, collectDefaultMetrics, register } from 'prom-client';
 
 @Injectable()
 export class MetricsService implements OnApplicationBootstrap {

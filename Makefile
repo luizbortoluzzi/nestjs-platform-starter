@@ -4,7 +4,7 @@ API_DIR  := apps/api
 .DEFAULT_GOAL := help
 
 .PHONY: help env dev infra-up infra-down up up-build down reset logs logs-api \
-        install build test test-e2e lint migrate migrate-create migrate-revert \
+        install build test test-e2e lint format migrate migrate-create migrate-revert \
         seed prometheus docs
 
 # ─── Help ──────────────────────────────────────────────────────────────────
@@ -67,8 +67,11 @@ test: ## Run unit tests
 test-e2e: infra-up ## Run e2e tests (starts infra first)
 	cd $(API_DIR) && npm run test:e2e
 
-lint: ## Run ESLint (errors fail, warnings pass)
-	cd $(API_DIR) && npx eslint "src/**/*.ts"
+lint: ## Run ESLint and Prettier check (errors fail)
+	cd $(API_DIR) && npx eslint "src/**/*.ts" && npm run format:check
+
+format: ## Auto-format all source files with Prettier
+	cd $(API_DIR) && npm run format
 
 # ─── Database ──────────────────────────────────────────────────────────────
 

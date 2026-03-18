@@ -9,7 +9,7 @@ import {
 import { Observable, from, switchMap } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
-import { AppCacheService } from '../../cache/cache.service';
+import { AppCacheService } from '../../infra/cache/cache.service';
 
 /**
  * Idempotency interceptor — prevents duplicate mutations caused by retried

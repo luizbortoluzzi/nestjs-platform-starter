@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { QUEUE_NAMES, JOB_NAMES } from '../queue.constants';
 import { WelcomeEmailJobPayload } from '../jobs/welcome-email.job';
-import { withRetry } from '../../common/utils/retry.util';
+import { withRetry } from '../../../common/utils/retry.util';
 
 @Processor(QUEUE_NAMES.EMAILS, {
   // Limit concurrent email jobs — avoids hammering the email provider

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
-import { AppConfigService } from '../config/config.service';
+import { AppConfigService } from '../../config/config.service';
 import { QUEUE_NAMES } from './queue.constants';
 import { EmailProcessor } from './processors/email.processor';
 import { NotificationProcessor } from './processors/notification.processor';
@@ -40,10 +40,7 @@ import { NotificationProcessor } from './processors/notification.processor';
         };
       },
     }),
-    BullModule.registerQueue(
-      { name: QUEUE_NAMES.NOTIFICATIONS },
-      { name: QUEUE_NAMES.EMAILS },
-    ),
+    BullModule.registerQueue({ name: QUEUE_NAMES.NOTIFICATIONS }, { name: QUEUE_NAMES.EMAILS }),
   ],
   providers: [EmailProcessor, NotificationProcessor],
   exports: [BullModule],

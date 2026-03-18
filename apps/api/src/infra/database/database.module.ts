@@ -1,6 +1,6 @@
 import { Global, Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppConfigService } from '../config/config.service';
+import { AppConfigService } from '../../config/config.service';
 
 @Global()
 @Module({
@@ -32,7 +32,7 @@ import { AppConfigService } from '../config/config.service';
             ? ['query', 'schema', 'migration', 'error', 'warn']
             : ['error', 'warn'],
 
-          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+          entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
           migrations: [__dirname + '/migrations/*{.ts,.js}'],
           migrationsRun: false,
 

@@ -8,9 +8,7 @@ export class NotificationProcessor extends WorkerHost {
   private readonly logger = new Logger(NotificationProcessor.name);
 
   async process(job: Job): Promise<void> {
-    this.logger.log(
-      `Processing job ${job.id} [${job.name}] attempt ${job.attemptsMade + 1}`,
-    );
+    this.logger.log(`Processing job ${job.id} [${job.name}] attempt ${job.attemptsMade + 1}`);
 
     switch (job.name) {
       case 'send-push':

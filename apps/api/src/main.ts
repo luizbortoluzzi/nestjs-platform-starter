@@ -1,13 +1,9 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/config.service';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
-import { MetricsService } from './metrics/metrics.service';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -47,22 +43,6 @@ async function bootstrap() {
     }),
   );
 
-  // ─── Global exception filter ──────────────────────────────
-  app.useGlobalFilters(new HttpExceptionFilter());
-
-  // ─── Global interceptors ──────────────────────────────────
-  // Execution order (first registered = outermost wrapper):
-  //   1. MetricsInterceptor          — times every request, outermost so it
-  //                                    captures total latency including all others
-  //   2. TransformInterceptor        — wraps data in { data, statusCode, timestamp }
-  //   3. ClassSerializerInterceptor  — strips @Exclude() fields from entities
-  // HTTP access logging is handled by pino-http (AppLoggerModule).
-  app.useGlobalInterceptors(
-    new MetricsInterceptor(app.get(MetricsService)),
-    new TransformInterceptor(),
-    new ClassSerializerInterceptor(app.get(Reflector)),
-  );
-
   // ─── OpenAPI / Swagger ────────────────────────────────────
   // Enabled in development only — no docs endpoint in production.
   // Access at: http://localhost:<port>/docs
@@ -71,12 +51,17 @@ async function bootstrap() {
       .setTitle('NestJS Platform Starter')
       .setDescription(
         'Platform API — authentication, user management, project CRUD.\n\n' +
-        'Authenticate via **POST /api/v1/auth/login**, copy the `accessToken`, ' +
-        'and click **Authorize** to use protected endpoints.',
+          'Authenticate via **POST /api/v1/auth/login**, copy the `accessToken`, ' +
+          'and click **Authorize** to use protected endpoints.',
       )
       .setVersion('1.0')
       .addBearerAuth(
-        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'Access token from /auth/login or /auth/register' },
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Access token from /auth/login or /auth/register',
+        },
         'access-token',
       )
       .build();

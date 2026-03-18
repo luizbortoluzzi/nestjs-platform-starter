@@ -1,6 +1,6 @@
 import { Global, Logger, Module } from '@nestjs/common';
 import Redis from 'ioredis';
-import { AppConfigService } from '../config/config.service';
+import { AppConfigService } from '../../config/config.service';
 import { AppCacheService } from './cache.service';
 import { REDIS_CLIENT } from './cache.constants';
 
@@ -41,9 +41,7 @@ export { REDIS_CLIENT } from './cache.constants';
 
         client.on('connect', () => logger.log('Connected'));
         client.on('ready', () => logger.log('Ready'));
-        client.on('error', (err: Error) =>
-          logger.error(`Error: ${err.message}`),
-        );
+        client.on('error', (err: Error) => logger.error(`Error: ${err.message}`));
         client.on('close', () => logger.warn('Connection closed'));
         client.on('reconnecting', () => logger.warn('Reconnecting…'));
         client.on('end', () => logger.warn('Connection ended'));

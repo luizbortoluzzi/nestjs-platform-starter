@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AppConfigService } from '../../config/config.service';
+import { CommonModule } from '../../common/common.module';
 import { UsersModule } from '../users/users.module';
-import { QueueModule } from '../../queue/queue.module';
+import { QueueModule } from '../../infra/queue/queue.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -12,10 +13,10 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
 
 @Module({
   imports: [
+    CommonModule,
     UsersModule,
     QueueModule,
     PassportModule,
@@ -41,7 +42,6 @@ import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.in
     JwtAuthGuard,
     JwtRefreshGuard,
     LocalAuthGuard,
-    IdempotencyInterceptor,
   ],
   exports: [AuthService, JwtAuthGuard],
 })

@@ -48,8 +48,7 @@ const HEALTH_PATH_PREFIX = '/api/v1/health';
         // Suppress health probe access logs — orchestrators ping these every few
         // seconds and the noise makes it hard to spot real traffic.
         autoLogging: {
-          ignore: (req: IncomingMessage) =>
-            (req.url?.startsWith(HEALTH_PATH_PREFIX) ?? false),
+          ignore: (req: IncomingMessage) => req.url?.startsWith(HEALTH_PATH_PREFIX) ?? false,
         },
       },
     }),

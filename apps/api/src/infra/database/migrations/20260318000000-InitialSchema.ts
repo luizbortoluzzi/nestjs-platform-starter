@@ -17,12 +17,8 @@ export class InitialSchema20260318000000 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // ─── Enum types ──────────────────────────────────────────────────────────
-    await queryRunner.query(
-      `CREATE TYPE "users_role_enum" AS ENUM('user', 'admin')`,
-    );
-    await queryRunner.query(
-      `CREATE TYPE "projects_status_enum" AS ENUM('active', 'archived')`,
-    );
+    await queryRunner.query(`CREATE TYPE "users_role_enum" AS ENUM('user', 'admin')`);
+    await queryRunner.query(`CREATE TYPE "projects_status_enum" AS ENUM('active', 'archived')`);
 
     // ─── Users ───────────────────────────────────────────────────────────────
     await queryRunner.query(`
@@ -65,9 +61,7 @@ export class InitialSchema20260318000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "projects" DROP CONSTRAINT "FK_projects_owner_id"`,
-    );
+    await queryRunner.query(`ALTER TABLE "projects" DROP CONSTRAINT "FK_projects_owner_id"`);
     await queryRunner.query(`DROP TABLE "projects"`);
     await queryRunner.query(`DROP TABLE "users"`);
     await queryRunner.query(`DROP TYPE "projects_status_enum"`);
