@@ -6,6 +6,7 @@ import {
   MemoryHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Public } from '../../common/decorators/public.decorator';
 import { RedisHealthIndicator } from './indicators/redis.health';
 
@@ -15,6 +16,7 @@ const HEAP_LIMIT_BYTES = 512 * 1024 * 1024; // 512 MB
 
 // Health probes are called every few seconds by orchestrators and load
 // balancers. Skip rate limiting so they never trip the throttler.
+@ApiTags('Health')
 @SkipThrottle()
 @Controller('health')
 export class HealthController {
@@ -38,6 +40,7 @@ export class HealthController {
   @Get('live')
   @Public()
   @HealthCheck()
+  @ApiOperation({ summary: 'Liveness probe — is the process alive?' })
   liveness() {
     return this.health.check([]);
   }
@@ -55,6 +58,7 @@ export class HealthController {
   @Get('ready')
   @Public()
   @HealthCheck()
+  @ApiOperation({ summary: 'Readiness probe — can this instance serve traffic?' })
   readiness() {
     return this.health.check([
       () => this.db.pingCheck('database'),

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
 // NOTE: This DTO's validators are NOT enforced by the global ValidationPipe
@@ -5,13 +6,14 @@ import { IsEmail, IsString, MinLength } from 'class-validator';
 // before the pipe and calls LocalStrategy.validate() directly — by the time
 // the pipe would normally run, the body has already been consumed.
 //
-// This class still serves as documentation (shape contract) and can be used
-// for explicit validation if the login endpoint is ever restructured to skip
-// the Passport guard in favour of a plain body-parsing approach.
+// The class still serves as documentation (OpenAPI schema) and as an explicit
+// body type for @ApiBody() on the login endpoint.
 export class LoginDto {
+  @ApiProperty({ example: 'alice@example.com' })
   @IsEmail()
   email: string;
 
+  @ApiProperty({ example: 'S3cur3P@ss!', minLength: 8 })
   @IsString()
   @MinLength(8)
   password: string;

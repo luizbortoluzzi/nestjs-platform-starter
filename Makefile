@@ -4,7 +4,8 @@ API_DIR  := apps/api
 .DEFAULT_GOAL := help
 
 .PHONY: help env dev infra-up infra-down up up-build down reset logs logs-api \
-        install build test lint migrate migrate-revert prometheus
+        install build test test-e2e lint migrate migrate-create migrate-revert \
+        seed prometheus docs
 
 # ─── Help ──────────────────────────────────────────────────────────────────
 
@@ -63,6 +64,9 @@ build: ## Compile TypeScript via nest build
 test: ## Run unit tests
 	cd $(API_DIR) && npm test -- --passWithNoTests
 
+test-e2e: infra-up ## Run e2e tests (starts infra first)
+	cd $(API_DIR) && npm run test:e2e
+
 lint: ## Run ESLint (errors fail, warnings pass)
 	cd $(API_DIR) && npx eslint "src/**/*.ts"
 
@@ -73,3 +77,12 @@ migrate: ## Run pending TypeORM migrations
 
 migrate-revert: ## Revert the most recent migration
 	cd $(API_DIR) && npm run migration:revert
+
+migrate-create: ## Create a blank migration (usage: make migrate-create NAME=AddSomeIndex)
+	cd $(API_DIR) && npm run migration:create -- src/database/migrations/$(NAME)
+
+seed: ## Seed the database with local development data
+	cd $(API_DIR) && npm run seed
+
+docs: ## Open the Swagger UI in the browser (requires running API)
+	xdg-open http://localhost:6000/docs 2>/dev/null || open http://localhost:6000/docs 2>/dev/null || true

@@ -1,6 +1,7 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { AppConfigService } from './config/config.service';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -62,6 +63,30 @@ async function bootstrap() {
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
 
+  // ─── OpenAPI / Swagger ────────────────────────────────────
+  // Enabled in development only — no docs endpoint in production.
+  // Access at: http://localhost:<port>/docs
+  if (nodeEnv !== 'production') {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('NestJS Platform Starter')
+      .setDescription(
+        'Platform API — authentication, user management, project CRUD.\n\n' +
+        'Authenticate via **POST /api/v1/auth/login**, copy the `accessToken`, ' +
+        'and click **Authorize** to use protected endpoints.',
+      )
+      .setVersion('1.0')
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'Access token from /auth/login or /auth/register' },
+        'access-token',
+      )
+      .build();
+
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('docs', app, document, {
+      swaggerOptions: { persistAuthorization: true },
+    });
+  }
+
   // ─── Graceful shutdown ────────────────────────────────────
   app.enableShutdownHooks();
 
@@ -71,6 +96,9 @@ async function bootstrap() {
   logger.log(`Running on  http://localhost:${port}/api/v1`, 'Bootstrap');
   logger.log(`Health:     http://localhost:${port}/api/v1/health/live`, 'Bootstrap');
   logger.log(`Metrics:    http://localhost:${port}/api/v1/metrics`, 'Bootstrap');
+  if (nodeEnv !== 'production') {
+    logger.log(`Docs:       http://localhost:${port}/docs`, 'Bootstrap');
+  }
   logger.log(`Env:        ${nodeEnv}`, 'Bootstrap');
 }
 

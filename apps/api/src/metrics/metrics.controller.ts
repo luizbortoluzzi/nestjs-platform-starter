@@ -1,6 +1,7 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Response } from 'express';
+import { ApiExcludeController } from '@nestjs/swagger';
 import { Public } from '../common/decorators/public.decorator';
 import { MetricsService } from './metrics.service';
 
@@ -16,6 +17,8 @@ import { MetricsService } from './metrics.service';
  */
 // Prometheus scrapes this endpoint every scrape_interval (default 15s).
 // Skip rate limiting so the scraper never trips the throttler.
+// Excluded from Swagger — Prometheus text format is not useful in the API docs.
+@ApiExcludeController()
 @SkipThrottle()
 @Controller('metrics')
 export class MetricsController {
